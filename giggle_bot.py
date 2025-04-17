@@ -36,8 +36,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text("✅ Gig posted!")
         else:
             await update.message.reply_text("❌ Please follow the correct format: Title | Description | Pay (RM)")
-    else:
-  
+        else:
+            await update.message.reply_text("❌ Please follow the correct format: Title | Description | Pay (RM)")
 async def invalid_format(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("❌ Please follow the correct format: Title | Description | Pay (RM)")
 
