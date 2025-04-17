@@ -56,7 +56,7 @@ def browse(update: Update, context: CallbackContext) -> None:
 
 # Main function
 def main():
-    updater = Updater("YOUR_BOT_TOKEN_HERE", use_context=True)
+    updater = Updater("8142482643:AAH48G2azQBkaCTGT7tDUGncDxYxfDrh1U4", use_context=True)
     dispatcher = updater.dispatcher
 
     dispatcher.add_handler(CommandHandler("start", start))
