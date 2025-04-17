@@ -12,7 +12,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "👋 Welcome to Giggle – Earn. Learn. Giggle."
 
-Type /post to post a gig or /browse to find one!"
+"Type /post to post a gig or /browse to find one!"
     )
 
 # Post a gig command
