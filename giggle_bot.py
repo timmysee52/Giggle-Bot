@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 # giggle_bot.py - Starter Telegram Bot for Giggle Platform
 
@@ -51,7 +52,6 @@ async def browse(update: Update, context: ContextTypes.DEFAULT_TYPE):
     f"💰 Pay: {gig['pay']}\n"
     f"🕒 Time: {gig['time']}"
 )
-
 {gig['desc']}
 💰 RM{gig['pay']} | Posted by: {gig['posted_by']}"
         await update.message.reply_text(msg, parse_mode='Markdown')
