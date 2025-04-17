@@ -1,45 +1,46 @@
-# -*- coding: utf-8 -*-
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 
-# giggle_bot.py - Starter Telegram Bot for Giggle Platform
-
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, ContextTypes
-
-# Dictionary to simulate a simple in-memory database
+# Sample in-memory storage for gigs
 gig_list = []
 
-# Start command
+# /start command
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "👋 Welcome to Giggle – Earn. Learn. Giggle."
+    await update.message.reply_text("👋 Welcome to Giggle! Type /post to post a gig, or /browse to see gigs!")
 
-"Type /post to post a gig or /browse to find one!"
+# /post command
+async def post(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "📝 Please type your gig in this format:\n\n"
+        "`Title | Description | Pay (RM)`\n\n"
+        "Example:\n"
+        "`Flyer Distributor | Hand out flyers in KLCC | 50`",
+        parse_mode='Markdown'
     )
 
-# Post a gig command
-async def post(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("📝 Please type your gig in the following format:\nJob Title | Location | Pay | Time")
-
-# Capture gig info
+# Handle posted gigs
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if '|' in update.message.text:
-        parts = update.message.text.split('|')
-        if len(parts) == 3:
-            title, desc, pay = map(str.strip, parts)
-            gig = {
-                'title': title,
-                'desc': desc,
-                'pay': pay,
-                'posted_by': update.message.from_user.username or update.message.from_user.first_name
-            }
-            gig_list.append(gig)
-            await update.message.reply_text("✅ Gig posted!")
-        else:
-            await update.message.reply_text("❌ Please follow the correct format: Title | Description | Pay (RM)")
-        
-async def invalid_format(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("❌ Please follow the correct format: Title | Description | Pay (RM)")
+    text = update.message.text
+    parts = text.split('|')
 
+    if len(parts) != 3:
+        await update.message.reply_text("❌ Please follow the correct format: Title | Description | Pay (RM)")
+        return
+
+    title = parts[0].strip()
+    description = parts[1].strip()
+    try:
+        pay = float(parts[2].strip())
+    except ValueError:
+        await update.message.reply_text("❌ Pay must be a number (e.g. 50)")
+        return
+
+    gig = {'title': title, 'description': description, 'pay': pay}
+    gig_list.append(gig)
+
+    await update.message.reply_text("✅ Your gig has been posted!")
+
+# /browse command
 async def browse(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not gig_list:
         await update.message.reply_text("😕 No gigs available yet. Check back later!")
@@ -53,26 +54,15 @@ async def browse(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         await update.message.reply_text(msg, parse_mode='Markdown')
 
-    f"📍 Location: {gig['location']}\n"
-    f"Pay: {gig['pay']}\n"
-    f"🕒 Time: {gig['time']}"
-(
-{gig['desc']}
-"RM{gig['pay']} | Posted by: {gig['posted_by']}")
-
-    await update.message.reply_text(msg, parse_mode='Markdown')
-
-# Bot setup
-def main():
+# Main function
+if __name__ == '__main__':
     app = ApplicationBuilder().token("YOUR_BOT_TOKEN_HERE").build()
+
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("post", post))
     app.add_handler(CommandHandler("browse", browse))
-    app.add_handler(CommandHandler("help", start))  # reuse start for help
-    app.add_handler(CommandHandler("giggle", start))  # playful extra command
-    app.add_handler(MessageHandler(None, handle_message))
-    print("✅ Giggle Bot is running...")
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+
+    print("🤖 Bot is running...")
     app.run_polling()
 
-if __name__ == "__main__":
-    main()
