@@ -17,9 +17,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # Post a gig command
 async def post(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("📝 Please type your gig in the following format:
-
-Title | Description | Pay (RM)")
+    await update.message.reply_text("📝 Please type your gig in the following format:\nJob Title | Location | Pay | Time")
 
 # Capture gig info
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
