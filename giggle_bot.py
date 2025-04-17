@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+
 # giggle_bot.py - Starter Telegram Bot for Giggle Platform
 
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
