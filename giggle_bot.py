@@ -57,9 +57,9 @@ async def browse(update: Update, context: ContextTypes.DEFAULT_TYPE):
     f"📍 Location: {gig['location']}\n"
     f"Pay: {gig['pay']}\n"
     f"🕒 Time: {gig['time']}"
-)
+(
 {gig['desc']}
-"RM{gig['pay']} | Posted by: {gig['posted_by']}"
+"RM{gig['pay']} | Posted by: {gig['posted_by']}")
 
     await update.message.reply_text(msg, parse_mode='Markdown')
 
