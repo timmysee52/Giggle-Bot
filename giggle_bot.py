@@ -45,7 +45,13 @@ async def browse(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     for gig in gig_list:
-        msg = f"📢 *{gig['title']}*
+        msg = (
+    f"📢 *{gig['title']}*\n"
+    f"📍 Location: {gig['location']}\n"
+    f"💰 Pay: {gig['pay']}\n"
+    f"🕒 Time: {gig['time']}"
+)
+
 {gig['desc']}
 💰 RM{gig['pay']} | Posted by: {gig['posted_by']}"
         await update.message.reply_text(msg, parse_mode='Markdown')
