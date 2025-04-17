@@ -37,9 +37,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             await update.message.reply_text("❌ Please follow the correct format: Title | Description | Pay (RM)")
     else:
-        await update.message.reply_text("❌ Please follow the correct format: Title | Description | Pay (RM)")
+  
+async def invalid_format(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("❌ Please follow the correct format: Title | Description | Pay (RM)")
 
-# Browse gigs
 async def browse(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not gig_list:
         await update.message.reply_text("😕 No gigs available yet. Check back later!")
@@ -47,7 +48,12 @@ async def browse(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     for gig in gig_list:
         msg = (
-    f"📢 *{gig['title']}*\n"
+            f"📢 *{gig['title']}*\n"
+            f"📝 {gig['description']}\n"
+            f"💰 RM{gig['pay']}"
+        )
+        await update.message.reply_text(msg, parse_mode='Markdown')
+
     f"📍 Location: {gig['location']}\n"
     f"Pay: {gig['pay']}\n"
     f"🕒 Time: {gig['time']}"
