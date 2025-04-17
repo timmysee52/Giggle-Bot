@@ -1,16 +1,16 @@
 from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 
 # Sample in-memory storage for gigs
 gig_list = []
 
 # /start command
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("👋 Welcome to Giggle! Type /post to post a gig, or /browse to see gigs!")
+def start(update: Update, context: CallbackContext) -> None:
+    update.message.reply_text("👋 Welcome to Giggle! Type /post to post a gig, or /browse to see gigs!")
 
 # /post command
-async def post(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
+def post(update: Update, context: CallbackContext) -> None:
+    update.message.reply_text(
         "📝 Please type your gig in this format:\n\n"
         "`Title | Description | Pay (RM)`\n\n"
         "Example:\n"
@@ -19,12 +19,12 @@ async def post(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 # Handle posted gigs
-async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+def handle_message(update: Update, context: CallbackContext) -> None:
     text = update.message.text
     parts = text.split('|')
 
     if len(parts) != 3:
-        await update.message.reply_text("❌ Please follow the correct format: Title | Description | Pay (RM)")
+        update.message.reply_text("❌ Please follow the correct format: Title | Description | Pay (RM)")
         return
 
     title = parts[0].strip()
@@ -32,18 +32,18 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         pay = float(parts[2].strip())
     except ValueError:
-        await update.message.reply_text("❌ Pay must be a number (e.g. 50)")
+        update.message.reply_text("❌ Pay must be a number (e.g. 50)")
         return
 
     gig = {'title': title, 'description': description, 'pay': pay}
     gig_list.append(gig)
 
-    await update.message.reply_text("✅ Your gig has been posted!")
+    update.message.reply_text("✅ Your gig has been posted!")
 
 # /browse command
-async def browse(update: Update, context: ContextTypes.DEFAULT_TYPE):
+def browse(update: Update, context: CallbackContext) -> None:
     if not gig_list:
-        await update.message.reply_text("😕 No gigs available yet. Check back later!")
+        update.message.reply_text("😕 No gigs available yet. Check back later!")
         return
 
     for gig in gig_list:
@@ -52,17 +52,22 @@ async def browse(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"📝 {gig['description']}\n"
             f"💰 RM{gig['pay']}"
         )
-        await update.message.reply_text(msg, parse_mode='Markdown')
+        update.message.reply_text(msg, parse_mode='Markdown')
 
 # Main function
-if __name__ == '__main__':
-    app = ApplicationBuilder().token("YOUR_BOT_TOKEN_HERE").build()
+def main():
+    updater = Updater("YOUR_BOT_TOKEN_HERE", use_context=True)
+    dispatcher = updater.dispatcher
 
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("post", post))
-    app.add_handler(CommandHandler("browse", browse))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+    dispatcher.add_handler(CommandHandler("start", start))
+    dispatcher.add_handler(CommandHandler("post", post))
+    dispatcher.add_handler(CommandHandler("browse", browse))
+    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_message))
 
     print("🤖 Bot is running...")
-    app.run_polling()
+    updater.start_polling()
+    updater.idle()
+
+if __name__ == '__main__':
+    main()
 
